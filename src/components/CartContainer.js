@@ -1,6 +1,13 @@
 import React from 'react';
 import CartItem from './CartItem';
-const CartContainer = ({ cart }) => {
+import { connect } from 'react-redux';
+import { CLEAR_CART, GET_TOTALS } from '../actions';
+const CartContainer = ({ cart = [], total, dispatch }) => {
+
+	React.useEffect(() => {
+		dispatch({type:GET_TOTALS})
+	})
+
 	if (cart.length === 0) {
 		return (
 			<section className="cart">
@@ -11,31 +18,42 @@ const CartContainer = ({ cart }) => {
 				</header>
 			</section>
 		);
-	}
-	return (
-		<section className="cart">
-			{/* cart header */}
-			<header>
-				<h2>your bag</h2>
-			</header>
-			{/* cart items */}
-			<article>
-				{cart.map((item) => {
-					return <CartItem key={item.id} {...item} />;
-				})}
-			</article>
-			{/* cart footer */}
-			<footer>
-				<hr />
-				<div className="cart-total">
-					<h4>
-						total <span>$0.00</span>
-					</h4>
-				</div>
-				<button className="btn clear-btn">clear cart</button>
-			</footer>
-		</section>
-	);
+	} else
+		return (
+			<section className="cart">
+				{/* cart header */}
+				<header>
+					<h2>your bag</h2>
+				</header>
+				{/* cart items */}
+				<article>
+					{cart.map((item) => {
+						return <CartItem key={item.id} {...item} />;
+					})}
+				</article>
+				{/* cart footer */}
+				<footer>
+					<hr />
+					<div className="cart-total">
+						<h4>
+							total <span>${total}</span>
+						</h4>
+					</div>
+					<button
+						className="btn clear-btn"
+						onClick={() => dispatch({ type: CLEAR_CART })}
+					>
+						clear cart
+					</button>
+				</footer>
+			</section>
+		);
 };
-
-export default CartContainer;
+//Not only can we
+const mapStateToProps = (store) => {
+	// return { cart: store.cart, total: store.total };
+	// ES6 method destructuring
+	const { cart, total } = store;
+	return { cart, total };
+};
+export default connect(mapStateToProps)(CartContainer);
